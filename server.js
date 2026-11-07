@@ -31,10 +31,6 @@ app.set('view engine', 'ejs');
 // Set the directory for EJS templates
 app.set('views', path.join(__dirname, 'src/views'));
 
-/*
- * Routes
- */
-
 
 /**
  * Routes
