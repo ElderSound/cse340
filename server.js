@@ -10,6 +10,7 @@ import { testConnection } from './src/models/db.js';
 // Import database models
 import { getAllOrganizations } from './src/models/organizations.js';
 import { getAllProjects } from './src/models/projects.js';
+import { getAllCategories } from './src/models/categories.js';
 
 // Define the application environment
 const NODE_ENV = process.env.NODE_ENV?.toLowerCase() || 'production';
@@ -40,7 +41,7 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'src/views'));
 
 
-/*
+/**
  * Routes
  */
 
@@ -86,12 +87,23 @@ app.get('/projects', async (req, res) => {
 
 // Render the categories page
 app.get('/categories', async (req, res) => {
-    const title = 'Service Project Categories';
-    res.render('categories', { title });
+    try {
+        // Retrieve all service project categories from the database
+        const categories = await getAllCategories();
+
+        const title = 'Service Project Categories';
+
+        // Render the EJS template with the categories data
+        res.render('categories', { title, categories });
+
+    } catch (error) {
+        console.error('Error retrieving categories:', error);
+        res.status(500).send('Error loading categories');
+    }
 });
 
 
-/*
+/**
  * Start the Express server
  * Test the PostgreSQL database connection
  */

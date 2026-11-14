@@ -135,3 +135,73 @@ VALUES
 (3, 'Volunteer Training Day',
  'Prepare volunteers for community initiatives.',
  'Quito, Ecuador', '2027-01-25');
+
+
+
+
+-- ========================================
+-- 1. Category Table
+-- ========================================
+CREATE TABLE category (
+    category_id SERIAL PRIMARY KEY,
+    name VARCHAR(150) NOT NULL UNIQUE
+);
+
+-- ========================================
+-- 2. Project-Category Relationship Table
+-- ========================================
+CREATE TABLE project_category (
+    project_id INTEGER NOT NULL,
+    category_id INTEGER NOT NULL,
+
+    PRIMARY KEY (project_id, category_id),
+
+    FOREIGN KEY (project_id)
+        REFERENCES project(project_id),
+
+    FOREIGN KEY (category_id)
+        REFERENCES category(category_id)
+);
+
+-- ========================================
+-- 3. Insert Sample Categories
+-- ========================================
+INSERT INTO category (name)
+VALUES
+    ('Community Development'),
+    ('Environment'),
+    ('Education'),
+    ('Social Assistance');
+
+-- ========================================
+-- 4. Associate All Projects with Categories
+-- ========================================
+
+-- BrightFuture Builders: projects 1-5
+INSERT INTO project_category (project_id, category_id)
+SELECT project_id, 1
+FROM project
+WHERE organization_id = 1;
+
+-- GreenHarvest Growers: projects 6-10
+INSERT INTO project_category (project_id, category_id)
+SELECT project_id, 2
+FROM project
+WHERE organization_id = 2;
+
+-- UnityServe Volunteers: projects 11-15
+INSERT INTO project_category (project_id, category_id)
+SELECT project_id, 4
+FROM project
+WHERE organization_id = 3;
+
+-- Additional associations to demonstrate many-to-many
+INSERT INTO project_category (project_id, category_id)
+SELECT project_id, 3
+FROM project
+WHERE title IN (
+    'School Playground Construction',
+    'Community Composting Workshop',
+    'School Garden Program',
+    'Volunteer Training Day'
+);

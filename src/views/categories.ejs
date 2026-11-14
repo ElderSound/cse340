@@ -4,14 +4,17 @@
 <main>
     <h1><%= title %></h1>
 
-    <h2>Explore Service Project Categories</h2>
-    <p>Find volunteer opportunities that match your interests and make a difference in your community.</p>
+    <p>
+        Explore the different categories of service projects
+        available through our partner organizations.
+    </p>
 
     <ul class="category-list">
-        <li>Environmental</li>
-        <li>Educational</li>
-        <li>Community Service</li>
-        <li>Health and Wellness</li>
+        <% categories.forEach(category => { %>
+            <li>
+                <strong><%= category.name %></strong>
+            </li>
+        <% }); %>
     </ul>
 </main>
 
