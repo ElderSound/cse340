@@ -1,19 +1,29 @@
 
-import { getAllProjects } from '../models/projects.js';
+import {
+    getUpcomingProjects,
+    getProjectDetails
+} from '../models/projects.js';
 
-/**
+/*
  * Service projects controller
  */
 
-// Render the projects page
+// Number of upcoming projects to display
+const NUMBER_OF_UPCOMING_PROJECTS = 5;
+
+/*
+ * Render the upcoming service projects page.
+ */
 const showProjectsPage = async (req, res, next) => {
     try {
-        // Retrieve all service projects and their organization names
-        const projects = await getAllProjects();
+        // Retrieve the next five upcoming projects
+        const projects = await getUpcomingProjects(
+            NUMBER_OF_UPCOMING_PROJECTS
+        );
 
-        const title = 'Service Projects';
+        const title = 'Upcoming Service Projects';
 
-        // Render the EJS template with the projects data
+        // Render the EJS template with project data
         res.render('projects', { title, projects });
 
     } catch (error) {
@@ -21,4 +31,35 @@ const showProjectsPage = async (req, res, next) => {
     }
 };
 
-export { showProjectsPage };
+/*
+ * Render the details page for a specific project.
+ */
+const showProjectDetailsPage = async (req, res, next) => {
+    try {
+        // Get the project ID from the URL
+        const projectId = req.params.id;
+
+        // Retrieve project details from the database
+        const project = await getProjectDetails(projectId);
+
+        // Return 404 if the project does not exist
+        if (!project) {
+            const err = new Error('Project Not Found');
+            err.status = 404;
+            return next(err);
+        }
+
+        const title = project.title;
+
+        // Render the project details page
+        res.render('project', { title, project });
+
+    } catch (error) {
+        next(error);
+    }
+};
+
+export {
+    showProjectsPage,
+    showProjectDetailsPage
+};

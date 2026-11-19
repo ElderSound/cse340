@@ -9,7 +9,11 @@ import {
     showOrganizationDetailsPage
 } from './controllers/organizations.js';
 
-import { showProjectsPage } from './controllers/projects.js';
+import {
+    showProjectsPage,
+    showProjectDetailsPage
+} from './controllers/projects.js';
+
 import { showCategoriesPage } from './controllers/categories.js';
 import { testErrorPage } from './controllers/errors.js';
 
@@ -29,8 +33,11 @@ router.get('/organizations', showOrganizationsPage);
 // Render the details of a specific organization
 router.get('/organization/:id', showOrganizationDetailsPage);
 
-// Render the projects page
+// Render the upcoming projects page
 router.get('/projects', showProjectsPage);
+
+// Render the details of a specific project
+router.get('/project/:id', showProjectDetailsPage);
 
 // Render the categories page
 router.get('/categories', showCategoriesPage);

@@ -4,25 +4,43 @@
 <main>
     <h1><%= title %></h1>
 
-    <p>Explore our upcoming service projects and the organizations sponsoring them.</p>
+    <p>
+        Explore our next five upcoming service projects
+        and the partner organizations behind them.
+    </p>
 
     <ul class="project-list">
         <% projects.forEach(project => { %>
             <li>
-                <strong>
+                <h2>
+                    <a href="/project/<%= project.project_id %>">
+                        <%= project.title %>
+                    </a>
+                </h2>
+
+                <p>
+                    <strong>Partner Organization:</strong>
+                    <a href="/organization/<%= project.organization_id %>">
+                        <%= project.organization_name %>
+                    </a>
+                </p>
+
+                <p><%= project.description %></p>
+
+                <p>
+                    <strong>Date:</strong>
                     <%= new Date(project.date).toLocaleDateString('en-US', {
                         year: 'numeric',
                         month: 'long',
                         day: 'numeric',
                         timeZone: 'UTC'
-                    }) %>:
-                    <%= project.title %>
-                </strong>
+                    }) %>
+                </p>
 
-                (<em><%= project.organization_name %></em>)
-
-                <p><%= project.description %></p>
-                <p>Location: <%= project.location %></p>
+                <p>
+                    <strong>Location:</strong>
+                    <%= project.location %>
+                </p>
             </li>
         <% }); %>
     </ul>
