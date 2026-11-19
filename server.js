@@ -7,10 +7,8 @@ import path from 'path';
 // Import PostgreSQL database connection
 import { testConnection } from './src/models/db.js';
 
-// Import database models
-import { getAllOrganizations } from './src/models/organizations.js';
-import { getAllProjects } from './src/models/projects.js';
-import { getAllCategories } from './src/models/categories.js';
+// Import application routes
+import router from './src/routes.js';
 
 // Define the application environment
 const NODE_ENV = process.env.NODE_ENV?.toLowerCase() || 'production';
@@ -40,66 +38,62 @@ app.set('view engine', 'ejs');
 // Set the directory for EJS templates
 app.set('views', path.join(__dirname, 'src/views'));
 
+// Middleware to log all incoming requests
+app.use((req, res, next) => {
+    if (NODE_ENV === 'development') {
+        console.log(`${req.method} ${req.url}`);
+    }
+
+    next(); // Pass control to the next middleware or route
+});
+
+// Middleware to make NODE_ENV available to all templates
+app.use((req, res, next) => {
+    res.locals.NODE_ENV = NODE_ENV;
+
+    next();
+});
+
 
 /**
  * Routes
  */
 
-// Render the home page
-app.get('/', async (req, res) => {
-    const title = 'Home';
-    res.render('home', { title });
+// Use the imported router to handle application routes
+app.use(router);
+
+
+/*
+ * Configure error handling middleware
+ */
+
+// Catch-all route for 404 errors
+app.use((req, res, next) => {
+    const err = new Error('Page Not Found');
+    err.status = 404;
+
+    next(err);
 });
 
-// Render the organizations page
-app.get('/organizations', async (req, res) => {
-    try {
-        // Retrieve all organizations from the database
-        const organizations = await getAllOrganizations();
+// Global error handler
+app.use((err, req, res, next) => {
+    // Log error details for debugging
+    console.error('Error occurred:', err.message);
+    console.error('Stack trace:', err.stack);
 
-        const title = 'Our Partner Organizations';
+    // Determine status and template
+    const status = err.status || 500;
+    const template = status === 404 ? '404' : '500';
 
-        // Render the EJS template with the organizations data
-        res.render('organizations', { title, organizations });
+    // Prepare data for the template
+    const context = {
+        title: status === 404 ? 'Page Not Found' : 'Server Error',
+        error: err.message,
+        stack: err.stack
+    };
 
-    } catch (error) {
-        console.error('Error retrieving organizations:', error);
-        res.status(500).send('Error loading organizations');
-    }
-});
-
-// Render the projects page
-app.get('/projects', async (req, res) => {
-    try {
-        // Retrieve all service projects and their organization names
-        const projects = await getAllProjects();
-
-        const title = 'Service Projects';
-
-        // Render the EJS template with the projects data
-        res.render('projects', { title, projects });
-
-    } catch (error) {
-        console.error('Error retrieving projects:', error);
-        res.status(500).send('Error loading projects');
-    }
-});
-
-// Render the categories page
-app.get('/categories', async (req, res) => {
-    try {
-        // Retrieve all service project categories from the database
-        const categories = await getAllCategories();
-
-        const title = 'Service Project Categories';
-
-        // Render the EJS template with the categories data
-        res.render('categories', { title, categories });
-
-    } catch (error) {
-        console.error('Error retrieving categories:', error);
-        res.status(500).send('Error loading categories');
-    }
+    // Render the appropriate error template
+    res.status(status).render(`errors/${template}`, context);
 });
 
 

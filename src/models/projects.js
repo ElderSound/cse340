@@ -1,6 +1,9 @@
 
 import db from './db.js';
 
+/*
+ * Retrieve all service projects and their organization names.
+ */
 const getAllProjects = async () => {
     const query = `
         SELECT
@@ -22,4 +25,27 @@ const getAllProjects = async () => {
     return result.rows;
 };
 
-export { getAllProjects };
+/*
+ * Retrieve service projects associated with an organization.
+ */
+const getProjectsByOrganizationId = async (organizationId) => {
+    const query = `
+        SELECT
+            project_id,
+            organization_id,
+            title,
+            description,
+            location,
+            date
+        FROM public.project
+        WHERE organization_id = $1
+        ORDER BY date ASC;
+    `;
+
+    const queryParams = [organizationId];
+    const result = await db.query(query, queryParams);
+
+    return result.rows;
+};
+
+export { getAllProjects, getProjectsByOrganizationId };
