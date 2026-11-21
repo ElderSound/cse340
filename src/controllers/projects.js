@@ -4,6 +4,8 @@ import {
     getProjectDetails
 } from '../models/projects.js';
 
+import { getCategoriesByProjectId } from '../models/categories.js';
+
 /*
  * Service projects controller
  */
@@ -49,10 +51,17 @@ const showProjectDetailsPage = async (req, res, next) => {
             return next(err);
         }
 
+        // Retrieve categories associated with this project
+        const categories = await getCategoriesByProjectId(projectId);
+
         const title = project.title;
 
         // Render the project details page
-        res.render('project', { title, project });
+        res.render('project', {
+            title,
+            project,
+            categories
+        });
 
     } catch (error) {
         next(error);

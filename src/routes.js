@@ -14,7 +14,11 @@ import {
     showProjectDetailsPage
 } from './controllers/projects.js';
 
-import { showCategoriesPage } from './controllers/categories.js';
+import {
+    showCategoriesPage,
+    showCategoryDetailsPage
+} from './controllers/categories.js';
+
 import { testErrorPage } from './controllers/errors.js';
 
 // Create Express router
@@ -41,6 +45,9 @@ router.get('/project/:id', showProjectDetailsPage);
 
 // Render the categories page
 router.get('/categories', showCategoriesPage);
+
+// Render the details of a specific category
+router.get('/category/:id', showCategoryDetailsPage);
 
 // Test route for 500 errors
 router.get('/test-error', testErrorPage);

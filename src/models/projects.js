@@ -100,9 +100,37 @@ const getProjectDetails = async (id) => {
     return result.rows.length > 0 ? result.rows[0] : null;
 };
 
+/*
+ * Retrieve all service projects associated with a category.
+ */
+const getProjectsByCategoryId = async (categoryId) => {
+    const query = `
+        SELECT
+            p.project_id,
+            p.title,
+            p.description,
+            p.date,
+            p.location,
+            p.organization_id,
+            o.name AS organization_name
+        FROM public.project AS p
+        INNER JOIN public.project_category AS pc
+            ON p.project_id = pc.project_id
+        INNER JOIN public.organization AS o
+            ON p.organization_id = o.organization_id
+        WHERE pc.category_id = $1
+        ORDER BY p.date ASC, p.project_id ASC;
+    `;
+
+    const result = await db.query(query, [categoryId]);
+
+    return result.rows;
+};
+
 export {
     getAllProjects,
     getProjectsByOrganizationId,
     getUpcomingProjects,
-    getProjectDetails
+    getProjectDetails,
+    getProjectsByCategoryId
 };
